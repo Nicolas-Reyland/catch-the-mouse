@@ -2,7 +2,7 @@
 Use one mouse on multiple computers.
 
 # Installation
-In France, we call taht "flemme" (install cargo for rust)
+In France, we call that "flemme" (install cargo for rust)
 
 ### Windows :
 ```batch
