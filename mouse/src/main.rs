@@ -22,14 +22,15 @@ fn parse_server_msg(buf: [u8; 12]) {
         }
         if b {
             // x
-            x = (x * 10) + (c as i32) - 0x30;
+            x = (x * 10) + ((c - 0x30) as i32);
         } else {
             // y
-            y = (y * 10) + (c as i32) - 0x30;
+            y = (y * 10) + ((c - 0x30) as i32);
         }
     }
     // move mouse to position
-    mouse.move_to(x.into(), y.into()).expect("Unable to move mouse");
+    println!("{} x {}", x, y);
+    mouse.move_to(x, y).expect("Unable to move mouse");
 }
 
 fn get_entry() -> String {

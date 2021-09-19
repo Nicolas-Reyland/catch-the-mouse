@@ -7,13 +7,18 @@ use std::thread;
 use mouse_rs::{types::keys::Keys, Mouse};
 use parse_net_args_lib::parse_net_args;
 
+fn fill_from_str(mut bytes: &mut [u8], s: &str) {
+    bytes.write(s.as_bytes()).unwrap();
+}
+
 fn handle_client(mut stream: TcpStream, adresse: &str) {
     let mut msg: Vec<u8> = Vec::new();
     let mouse = Mouse::new();
     let mut position = mouse.get_position().unwrap();
+    let mut bytes: [u8; 12] = [0; 12];
 
     loop {
-        let buf = &mut [0; 10];
+        let buf = &mut [0; 12];
 
         match stream.read(buf) {
             Ok(received) => {
@@ -40,7 +45,10 @@ fn handle_client(mut stream: TcpStream, adresse: &str) {
                         // end
                         position = mouse.get_position().unwrap();
                         let mouse_pos_string = format!("{}x{}", position.x, position.y);
-                        stream.write(mouse_pos_string.as_bytes()).unwrap();
+                        println!("{}", mouse_pos_string);
+                        fill_from_str(&mut bytes, &mouse_pos_string);
+                        println!("{:?}", bytes);
+                        stream.write(&mut bytes).unwrap();
                         msg = Vec::new();
                         break; // only read one line
                     } else {
