@@ -2,7 +2,7 @@
 
 use std::env;
 use std::net::{TcpStream,SocketAddr};
-use std::io::{Write, Read, stdin};
+use std::io::{Write, Read};
 use mouse_rs::{types::keys::Keys, Mouse};
 use parse_net_args_lib::parse_net_args;
 
@@ -11,7 +11,7 @@ fn parse_server_msg(buf: [u8; 12]) {
     let (mut x, mut y): (i32, i32) = (0, 0);
     let mut b: bool = true;
     let mouse: Mouse = Mouse::new();
-    let (press_r, press_l, press_m): (bool, bool, bool) = (false, false, false);
+    let (mut press_r, mut press_l, mut press_m): (bool, bool, bool) = (false, false, false);
     // calculate mouse positions
     for c in buf {
         if c == 0 {
@@ -45,21 +45,14 @@ fn parse_server_msg(buf: [u8; 12]) {
     println!("{} x {}", x, y);
     mouse.move_to(x, y).expect("Unable to move mouse");
     if press_l {
-        mouse.click(Keys.LEFT)
+        mouse.click(&Keys::LEFT).unwrap();
     }
     if press_r {
-        mouse.click(Keys.RIGHT)
+        mouse.click(&Keys::RIGHT).unwrap();
     }
     if press_m {
-        mouse.click(Keys.MIDDLE)
+        mouse.click(&Keys::MIDDLE).unwrap();
     }
-}
-
-fn get_entry() -> String {
-    let mut buf = String::new();
-
-    stdin().read_line(&mut buf).unwrap();
-    buf.replace("\n", "").replace("\r", "")
 }
 
 fn exchange_with_server(mut stream: TcpStream) {
