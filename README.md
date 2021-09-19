@@ -28,13 +28,13 @@ sudo apt install libx11-dev # Fedora/RHEL/CentOS: xorg-x11-server-devel
 As the 'cat' (server/computer connected to the mouse) do :
 ```bash
 cd cat
-cargo run `YOUR_IP_ADDR:PORT`
+cargo run YOUR_IP_ADDR:PORT
 ```
 
 As the 'mouse' (client/computer without a mouse) do :
 ```bash
 cd mouse
-argo run `CAT_IP_ADDR:PORT`
+argo run CAT_IP_ADDR:PORT
 ```
 
 # Rust
