@@ -17,6 +17,10 @@ fn parse_server_msg(buf: [u8; 12]) {
         if c == 0 {
             break;
         }
+        if c == 120 {
+            b = false;
+            continue;
+        }
         if c > 0x39 {
             if c == 'l' as u8 {
                 press_l = true;
@@ -27,10 +31,6 @@ fn parse_server_msg(buf: [u8; 12]) {
             if c == 'm' as u8 {
                 press_m = true;
             }
-            continue;
-        }
-        if c == 120 {
-            b = false;
             continue;
         }
         if b {

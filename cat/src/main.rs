@@ -48,15 +48,15 @@ fn handle_client(mut stream: TcpStream, adresse: &str) {
                         mouse = device_state.get_mouse();
                         mouse_x = mouse.coords.0;
                         mouse_y = mouse.coords.1;
-                        let pressed_buttons_string = "";
+                        let mut pressed_buttons_string: String = "".to_owned();
                         if mouse.button_pressed[1] {
-                            pressed_buttons_string += "l";
+                            pressed_buttons_string = "l".to_owned();
                         }
                         if mouse.button_pressed[2] {
-                            pressed_buttons_string += "r";
+                            pressed_buttons_string = pressed_buttons_string.clone() + "r";
                         }
                         if mouse.button_pressed[3] {
-                            pressed_buttons_string += "m";
+                            pressed_buttons_string = format!("{}{}", pressed_buttons_string, "m".to_owned());
                         }
                         let mouse_pos_string = format!("{x}x{y}{buttons}",
                             x = mouse_x,
