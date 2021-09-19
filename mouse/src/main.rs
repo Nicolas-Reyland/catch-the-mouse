@@ -46,7 +46,7 @@ fn parse_server_msg(buf: [u8; 12]) {
         }
     }
     // move mouse to position
-    println!("{} x {}", x, y);
+    //println!("{} x {}", x, y);
     mouse.move_to(x, y).expect("Unable to move mouse");
     if press_l {
         mouse.click(&Keys::LEFT).unwrap();
@@ -66,7 +66,7 @@ fn exchange_with_server(mut stream: TcpStream) {
 
     println!("Enter 'quit' when you want to leave");
     loop {
-        write!(io, "> ").unwrap();
+        //write!(io, "> ").unwrap();
         io.flush().unwrap();
         let line: String = "_\n".to_string();
         write!(stream, "{}\n", line).unwrap();
@@ -82,7 +82,7 @@ fn exchange_with_server(mut stream: TcpStream) {
                 return;
             }
         }
-        println!("Server response : {:?}", buf);
+        //println!("Server response : {:?}", buf);
         parse_server_msg(*buf);
     }
 }
