@@ -9,14 +9,13 @@ use mouse_rs::Mouse;
 use device_query::{DeviceQuery, DeviceState, MouseState};
 use parse_net_args_lib::parse_net_args;
 
-static BETWEEN_CLICK_DURATION_MS: u128 = 250;
+static BETWEEN_CLICK_DURATION_MS: u128 = 150;
 
 fn fill_from_str(mut bytes: &mut [u8], s: &str) {
     bytes.write(s.as_bytes()).unwrap();
 }
 
 fn handle_client(mut stream: TcpStream, adresse: &str) {
-    //let mut msg: Vec<u8> = Vec::new();
     let mut bytes: [u8; 12];
 
     let device_state: DeviceState = DeviceState::new();
@@ -30,8 +29,9 @@ fn handle_client(mut stream: TcpStream, adresse: &str) {
     let (max_x, max_y): (i32, i32) = (1920, 1080);
     let mut now: Instant = Instant::now();
     let mut old_now: Instant = now;
-    let mut last_pressed_instant: Instant = now;
-    let mut last_pressed_flag: u8 = 0;
+    let mut last_l_pressed_instant: Instant = now;
+    let mut last_r_pressed_instant: Instant = now;
+    let mut last_m_pressed_instant: Instant = now;
 
     loop {
         let buf = &mut [0; 12];
@@ -68,23 +68,22 @@ fn handle_client(mut stream: TcpStream, adresse: &str) {
                 // get time info
                 now = Instant::now();
                 let duraton: u128 = now.duration_since(old_now).as_millis();
-                let click_duration: u128 = now.duration_since(last_pressed_instant).as_millis();
+                let last_l_pressed_duration: u128 = now.duration_since(last_l_pressed_instant).as_millis();
+                let last_r_pressed_duration: u128 = now.duration_since(last_r_pressed_instant).as_millis();
+                let last_m_pressed_duration: u128 = now.duration_since(last_m_pressed_instant).as_millis();
                 // check for button presses
                 let mut pressed_buttons_string: String = "".to_owned();
-                if mouse.button_pressed[1] && (last_pressed_flag & 1 == 0 || click_duration < BETWEEN_CLICK_DURATION_MS) {
+                if mouse.button_pressed[1] && last_l_pressed_duration > BETWEEN_CLICK_DURATION_MS {
                     pressed_buttons_string = "l".to_owned();
-                    last_pressed_instant = now;
-                    last_pressed_flag = 1;
+                    last_l_pressed_instant = now;
                 }
-                if mouse.button_pressed[2] && (last_pressed_flag & 2 == 0 || click_duration < BETWEEN_CLICK_DURATION_MS) {
+                if mouse.button_pressed[2] && last_r_pressed_duration > BETWEEN_CLICK_DURATION_MS {
                     pressed_buttons_string = pressed_buttons_string.clone() + "r";
-                    last_pressed_instant = now;
-                    last_pressed_flag += 2;
+                    last_r_pressed_instant = now;
                 }
-                if mouse.button_pressed[3] && (last_pressed_flag & 4 == 0 || click_duration < BETWEEN_CLICK_DURATION_MS) {
+                if mouse.button_pressed[3] && last_m_pressed_duration > BETWEEN_CLICK_DURATION_MS {
                     pressed_buttons_string = format!("{}{}", pressed_buttons_string, "m".to_owned());
-                    last_pressed_instant = now;
-                    last_pressed_flag += 4;
+                    last_m_pressed_instant = now;
                 }
                 // format final msg
                 let mouse_pos_string = format!("{x}x{y}{buttons}",
