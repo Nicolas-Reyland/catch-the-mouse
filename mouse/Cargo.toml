@@ -6,4 +6,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-parse_net_args_lib = { path = "../parse_net_args_lib" }
+mouse-rs = "0.4.1"
+parse_net_args_lib = { path = "../libs/parse_net_args_lib" }

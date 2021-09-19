@@ -3,8 +3,34 @@
 use std::env;
 use std::net::{TcpStream,SocketAddr};
 use std::io::{Write, Read, stdin};
-//use std::str::from_utf8;
+use mouse_rs::{types::keys::Keys, Mouse};
 use parse_net_args_lib::parse_net_args;
+
+fn parse_server_msg(buf: [u8; 12]) {
+    // declare vars
+    let (mut x, mut y): (i32, i32) = (0, 0);
+    let mut b: bool = true;
+    let mouse: Mouse = Mouse::new();
+    // calculate mouse positions
+    for c in buf {
+        if c == 0 {
+            break;
+        }
+        if c == 120 {
+            b = false;
+            continue;
+        }
+        if b {
+            // x
+            x = (x * 10) + (c as i32) - 0x30;
+        } else {
+            // y
+            y = (y * 10) + (c as i32) - 0x30;
+        }
+    }
+    // move mouse to position
+    mouse.move_to(x.into(), y.into()).expect("Unable to move mouse");
+}
 
 fn get_entry() -> String {
     let mut buf = String::new();
@@ -16,7 +42,7 @@ fn get_entry() -> String {
 fn exchange_with_server(mut stream: TcpStream) {
     let stdout = std::io::stdout();
     let mut io = stdout.lock();
-    let buf = &mut [0; 3];
+    let buf = &mut [0; 12];
 
     println!("Enter 'quit' when you want to leave");
     loop {
@@ -43,6 +69,7 @@ fn exchange_with_server(mut stream: TcpStream) {
                     }
                 }
                 println!("Server response : {:?}", buf);
+                parse_server_msg(*buf);
             }
         }
     }
