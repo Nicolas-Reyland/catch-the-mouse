@@ -49,12 +49,13 @@ fn exchange_with_server(mut stream: TcpStream) {
         write!(io, "> ").unwrap();
         // pour afficher de suite
         io.flush().unwrap();
-        match &*get_entry() {
+        /*match &*get_entry() {
             "quit" => {
                 println!("bye !");
                 return;
             }
-            line => {
+            line => {*/
+                let line: String = "ok\n".to_string();
                 write!(stream, "{}\n", line).unwrap();
                 match stream.read(buf) {
                     Ok(received) => {
@@ -70,8 +71,8 @@ fn exchange_with_server(mut stream: TcpStream) {
                 }
                 println!("Server response : {:?}", buf);
                 parse_server_msg(*buf);
-            }
-        }
+            //}
+        //}
     }
 }
 
