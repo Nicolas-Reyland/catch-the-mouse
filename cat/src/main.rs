@@ -4,7 +4,7 @@ use std::env;
 use std::net::{TcpListener, TcpStream, SocketAddr};
 use std::io::{Read, Write};
 use std::thread;
-use mouse_rs::{types::keys::Keys, Mouse};
+use device_query::{DeviceQuery, DeviceState, MouseState};
 use parse_net_args_lib::parse_net_args;
 
 fn fill_from_str(mut bytes: &mut [u8], s: &str) {
@@ -13,12 +13,14 @@ fn fill_from_str(mut bytes: &mut [u8], s: &str) {
 
 fn handle_client(mut stream: TcpStream, adresse: &str) {
     let mut msg: Vec<u8> = Vec::new();
-    let mouse = Mouse::new();
-    let mut position = mouse.get_position().unwrap();
-    let mut bytes: [u8; 12] = [0; 12];
+    let device_state: DeviceState = DeviceState::new();
+    let mut mouse: MouseState;
+    let (mut mouse_x, mut mouse_y): (i32, i32);
+    let mut bytes: [u8; 12];
 
     loop {
         let buf = &mut [0; 12];
+        bytes = [0; 12];
 
         match stream.read(buf) {
             Ok(received) => {
@@ -36,18 +38,20 @@ fn handle_client(mut stream: TcpStream, adresse: &str) {
                     }
                     x += 1;
                     if *c == '\n' as u8 {
-                        let client_msg = String::from_utf8(msg).unwrap();
-                        println!("message {} : {}",
+                        let _client_msg = String::from_utf8(msg).unwrap();
+                        /*println!("message {} : {}",
                             adresse,
                             // convert buffer into string
                             client_msg
-                        );
+                        );*/
                         // end
-                        position = mouse.get_position().unwrap();
-                        let mouse_pos_string = format!("{}x{}", position.x, position.y);
-                        println!("{}", mouse_pos_string);
+                        mouse = device_state.get_mouse();
+                        mouse_x = mouse.coords.0;
+                        mouse_y = mouse.coords.1;
+                        let mouse_pos_string = format!("{}x{}", mouse_x, mouse_y);
+                        //println!("{}", mouse_pos_string);
                         fill_from_str(&mut bytes, &mouse_pos_string);
-                        println!("{:?}", bytes);
+                        //println!("{:?}", bytes);
                         stream.write(&mut bytes).unwrap();
                         msg = Vec::new();
                         break; // only read one line
