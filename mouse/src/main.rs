@@ -14,13 +14,16 @@ fn parse_server_msg(buf: [u8; 12]) {
     let (mut press_r, mut press_l, mut press_m): (bool, bool, bool) = (false, false, false);
     // calculate mouse positions
     for c in buf {
+        // premature end of buffer
         if c == 0 {
             break;
         }
+        // 'x' between x and y coords
         if c == 120 {
             b = false;
             continue;
         }
+        // button presses
         if c > 0x39 {
             if c == 'l' as u8 {
                 press_l = true;
@@ -33,6 +36,7 @@ fn parse_server_msg(buf: [u8; 12]) {
             }
             continue;
         }
+        // write to x or y coordinates
         if b {
             // x
             x = (x * 10) + ((c - 0x30) as i32);
@@ -63,32 +67,23 @@ fn exchange_with_server(mut stream: TcpStream) {
     println!("Enter 'quit' when you want to leave");
     loop {
         write!(io, "> ").unwrap();
-        // pour afficher de suite
         io.flush().unwrap();
-        /*match &*get_entry() {
-            "quit" => {
-                println!("bye !");
+        let line: String = "_\n".to_string();
+        write!(stream, "{}\n", line).unwrap();
+        match stream.read(buf) {
+            Ok(received) => {
+                if received < 1 {
+                    println!("Connection to server has been lost (0)");
+                    return;
+                }
+            }
+            Err(_) => {
+                println!("Connection to server has been lost (e)");
                 return;
             }
-            line => {*/
-                let line: String = "ok\n".to_string();
-                write!(stream, "{}\n", line).unwrap();
-                match stream.read(buf) {
-                    Ok(received) => {
-                        if received < 1 {
-                            println!("Connection to server has been lost (0)");
-                            return;
-                        }
-                    }
-                    Err(_) => {
-                        println!("Connection to server has been lost (e)");
-                        return;
-                    }
-                }
-                println!("Server response : {:?}", buf);
-                parse_server_msg(*buf);
-            //}
-        //}
+        }
+        println!("Server response : {:?}", buf);
+        parse_server_msg(*buf);
     }
 }
 
