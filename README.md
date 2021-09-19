@@ -38,5 +38,5 @@ argo run `CAT_IP_ADDR:PORT`
 ```
 
 # Rust
-You could ask me: 'Why are you doing this in Rust when a python script could suffice ?'
-I don't know either.
+- You could ask me: 'Why are you doing this in Rust when a python script could suffice ?'
+- I don't know either.
