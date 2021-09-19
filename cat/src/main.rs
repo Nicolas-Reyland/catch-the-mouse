@@ -48,10 +48,21 @@ fn handle_client(mut stream: TcpStream, adresse: &str) {
                         mouse = device_state.get_mouse();
                         mouse_x = mouse.coords.0;
                         mouse_y = mouse.coords.1;
-                        let mouse_pos_string = format!("{}x{}", mouse_x, mouse_y);
-                        //println!("{}", mouse_pos_string);
+                        let pressed_buttons_string = "";
+                        if mouse.button_pressed[1] {
+                            pressed_buttons_string += "l";
+                        }
+                        if mouse.button_pressed[2] {
+                            pressed_buttons_string += "r";
+                        }
+                        if mouse.button_pressed[3] {
+                            pressed_buttons_string += "m";
+                        }
+                        let mouse_pos_string = format!("{x}x{y}{buttons}",
+                            x = mouse_x,
+                            y = mouse_y,
+                            buttons = pressed_buttons_string);
                         fill_from_str(&mut bytes, &mouse_pos_string);
-                        //println!("{:?}", bytes);
                         stream.write(&mut bytes).unwrap();
                         msg = Vec::new();
                         break; // only read one line

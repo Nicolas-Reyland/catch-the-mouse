@@ -11,10 +11,23 @@ fn parse_server_msg(buf: [u8; 12]) {
     let (mut x, mut y): (i32, i32) = (0, 0);
     let mut b: bool = true;
     let mouse: Mouse = Mouse::new();
+    let (press_r, press_l, press_m): (bool, bool, bool) = (false, false, false);
     // calculate mouse positions
     for c in buf {
         if c == 0 {
             break;
+        }
+        if c > 0x39 {
+            if c == 'l' as u8 {
+                press_l = true;
+            }
+            if c == 'r' as u8 {
+                press_r = true;
+            }
+            if c == 'm' as u8 {
+                press_m = true;
+            }
+            continue;
         }
         if c == 120 {
             b = false;
@@ -31,6 +44,15 @@ fn parse_server_msg(buf: [u8; 12]) {
     // move mouse to position
     println!("{} x {}", x, y);
     mouse.move_to(x, y).expect("Unable to move mouse");
+    if press_l {
+        mouse.click(Keys.LEFT)
+    }
+    if press_r {
+        mouse.click(Keys.RIGHT)
+    }
+    if press_m {
+        mouse.click(Keys.MIDDLE)
+    }
 }
 
 fn get_entry() -> String {
