@@ -4,6 +4,7 @@ Use one mouse on multiple computers.
 # Installation
 In France, we call that "flemme" (install cargo for rust)
 
+(installation script not done yet)
 ### Windows :
 ```batch
 git clone https://github.com/Nicolas-Reyland/catch-the-mouse
@@ -34,7 +35,7 @@ cargo run YOUR_IP_ADDR:PORT
 As the 'mouse' (client/computer without a mouse) do :
 ```bash
 cd mouse
-argo run CAT_IP_ADDR:PORT
+cargo run CAT_IP_ADDR:PORT
 ```
 
 # Rust
