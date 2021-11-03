@@ -91,7 +91,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let addr: SocketAddr = parse_net_args(args);
 
-    println!("Trying to connect to server useing params {:?} ...", addr);
+    println!("Trying to connect to server using params {:?} ...", addr);
     match TcpStream::connect(addr) {
         Ok(stream) => {
             println!("Connexion successful !");
